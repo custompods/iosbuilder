@@ -533,45 +533,44 @@ function setVersion() {
 #==== set xcodebuild and xctool build arguments
 #==========================================================
 function setBuildArguments() {
-		XC_BUILD_COMMAND="$XC_BUILD_TOOL $XC_PROJECT_FORMAT_ARG '$XC_PROJECT_PATH' -scheme '$XC_SCHEME' -configuration '$XC_CONFIGURATION' -sdk '${XC_SDK_TYPE}${XC_SDK}' archive"
-		XC_BUILD_COMMAND+=" -archivePath '$ARTIFACTS_PATH/app'"
-		XC_BUILD_COMMAND+=" $XC_DERIVEDDATA_PATH $XC_EXTRA_ARGS"
+	XC_BUILD_COMMAND="$XC_BUILD_TOOL $XC_PROJECT_FORMAT_ARG '$XC_PROJECT_PATH' -scheme '$XC_SCHEME' -configuration '$XC_CONFIGURATION' -sdk '${XC_SDK_TYPE}${XC_SDK}' archive"
+	XC_BUILD_COMMAND+=" -archivePath '$ARTIFACTS_PATH/app'"
+	XC_BUILD_COMMAND+=" $XC_DERIVEDDATA_PATH $XC_EXTRA_ARGS"
 
-		if [ $XC_USE_XCODEBUILD == 1 ]
+	if [ $XC_USE_XCODEBUILD == 1 ]
+	then
+		XC_BUILD_COMMAND+=" | tee '$ARTIFACTS_PATH/xcodebuild.log' $XC_COMPILE_REPORTER"
+	else
+		#add xctool arguments
+		XC_BUILD_COMMAND+=" -reporter pretty"
+
+		#if the CI tool is teamcity add the teamcity reporter
+		if [[ -n "$CITOOL_TEAMCITY" ]]
 		then
-			XC_BUILD_COMMAND+=" | tee '$ARTIFACTS_PATH/xcodebuild.log' $XC_COMPILE_REPORTER"
-		else
-			#add xctool arguments
-			XC_BUILD_COMMAND+=" -reporter pretty"
-
-			#if the CI tool is teamcity add the teamcity reporter
-			if [[ -n "$CITOOL_TEAMCITY" ]]
-			then
-				XC_BUILD_COMMAND+=" -reporter teamcity"
-			fi
-
-			if [ $OCTOOL_CODE_ANALYSIS_ENABLED == 1 ]
-			then
-				XC_BUILD_COMMAND+=" -reporter json-compilation-database:compile_commands.json"
-			fi
+			XC_BUILD_COMMAND+=" -reporter teamcity"
 		fi
 
+		if [ $OCTOOL_CODE_ANALYSIS_ENABLED == 1 ]
+		then
+			XC_BUILD_COMMAND+=" -reporter json-compilation-database:compile_commands.json"
+		fi
+	fi
 }
 
 #==========================================================
 #==== set xcodebuild and xctool test build arguments
 #==========================================================
 function setTestBuildArguments() {
-		XC_BUILD_COMMAND="$XC_BUILD_TOOL $XC_PROJECT_FORMAT_ARG '$XC_PROJECT_PATH' -scheme '$XC_SCHEME' -configuration '$XC_TEST_CONFIGURATION' -sdk '${XC_TEST_SDK_TYPE}${XC_SDK}' test"
-		XC_BUILD_COMMAND+=" $XC_DERIVEDDATA_PATH $XC_CODECOVERAGE_PREF $XC_TEST_EXTRA_ARGS  -destination 'platform=iOS Simulator,OS=$XC_SIMOS_VER,name=$XC_SIMDEVICE' "
+	XC_BUILD_COMMAND="$XC_BUILD_TOOL $XC_PROJECT_FORMAT_ARG '$XC_PROJECT_PATH' -scheme '$XC_SCHEME' -configuration '$XC_TEST_CONFIGURATION' -sdk '${XC_TEST_SDK_TYPE}${XC_SDK}' test"
+	XC_BUILD_COMMAND+=" $XC_DERIVEDDATA_PATH $XC_CODECOVERAGE_PREF $XC_TEST_EXTRA_ARGS  -destination 'platform=iOS Simulator,OS=$XC_SIMOS_VER,name=$XC_SIMDEVICE' "
 
-		if [ $XC_USE_XCODEBUILD == 1 ]
-		then
-			XC_BUILD_COMMAND+=" | tee '$ARTIFACTS_PATH/xcodebuild-tests-$XC_SCHEME.log' $XC_COMPILE_REPORTER"
-		else 
-			#add xctool arguments
-			XC_BUILD_COMMAND+=" -reporter pretty -reporter \"junit:${XC_JUNIT_REPORTS_PATH}/${XC_SCHEME}.xml\""
-		fi
+	if [ $XC_USE_XCODEBUILD == 1 ]
+	then
+		XC_BUILD_COMMAND+=" | tee '$ARTIFACTS_PATH/xcodebuild-tests-$XC_SCHEME.log' $XC_COMPILE_REPORTER"
+	else 
+		#add xctool arguments
+		XC_BUILD_COMMAND+=" -reporter pretty -reporter \"junit:${XC_JUNIT_REPORTS_PATH}/${XC_SCHEME}.xml\""
+	fi
 }
 
 
