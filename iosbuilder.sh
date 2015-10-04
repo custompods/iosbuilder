@@ -2,7 +2,7 @@
 # Distributed under the MIT license
 # Copyright (c) 2013 Nicolae Ghimbovschi
 
-VERSION=2.0.1
+VERSION=2.0.2
 
 PROJECT_PATH="$1"
 APPSCHEME="$2"
@@ -242,12 +242,8 @@ function matchProvisioningProfile() {
 function setDefaultXcode() {
 
   case "$XC_SDK" in
-    8.0|8.1|8.2|8.3)
+    8.0|8.1|8.2|8.3|8.4)
       export DEVELOPER_DIR="/Applications/Xcode-6.4.app/Contents/Developer"
-      ;;
-
-    9.0)
-      export DEVELOPER_DIR="/Applications/Xcode-7.app/Contents/Developer"
       ;;
 
     *)
@@ -679,7 +675,6 @@ function testProject() {
 
     createLockFile $LOCKFILE_SIMLATOR
     closeSimulator
-    startTheSimulator
 
     OLDIFS=$IFS
     IFS=,
@@ -827,36 +822,6 @@ function clean {
   rm -fr "$ARTIFACTS_PATH"
   rm -f compile_commands.json
 }
-
-#==========================================================
-#==== warmup the simulator
-#==========================================================
-function startTheSimulator {
-
-  SIMOSVER=$XC_SIMOS_VER
-
-  if [ x$XC_SIMOS_VER = x"latest" ]
-  then
-    #list all runtimes and extract the latest version
-    # xcrun simctl list runtimes
-    # == Runtimes ==
-    # iOS 7.1 (7.1 - 11D167) (com.apple.CoreSimulator.SimRuntime.iOS-7-1)
-    # iOS 8.1 (8.1 - 12B411) (com.apple.CoreSimulator.SimRuntime.iOS-8-1)
-    # iOS 8.3 (8.3 - 12F69) (com.apple.CoreSimulator.SimRuntime.iOS-8-3)
-
-      SIMOSVER=$(xcrun simctl list runtimes | tail -n1 | cut -d" " -f2)
-  fi
-
-  #e.g. iPhone 6 (8.3 Simulator)
-  SIMULATORSTRING="$XC_SIMDEVICE ($SIMOSVER Simulator)"
-
-  echo "Starting $SIMULATORSTRING"
-  xcrun instruments -w "$SIMULATORSTRING" >/dev/null 2>&1 || true
-
-  #wait 15s for simulator to boot
-  sleep 15
-}
-
 
 function closeSimulator {
   #close the simulator
