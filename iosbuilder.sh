@@ -2,7 +2,7 @@
 # Distributed under the MIT license
 # Copyright (c) 2013 Nicolae Ghimbovschi
 
-VERSION=2.0.2
+VERSION=2.0.3
 
 PROJECT_PATH="$1"
 APPSCHEME="$2"
@@ -557,7 +557,7 @@ function setBuildArguments() {
 #==== set xcodebuild and xctool test build arguments
 #==========================================================
 function setTestBuildArguments() {
-  XC_BUILD_COMMAND="$XC_BUILD_TOOL $XC_PROJECT_FORMAT_ARG '$XC_PROJECT_PATH' -scheme '$XC_SCHEME' -configuration '$XC_TEST_CONFIGURATION' -sdk '${XC_TEST_SDK_TYPE}${XC_SDK}' test"
+  XC_BUILD_COMMAND="$XC_BUILD_TOOL $XC_PROJECT_FORMAT_ARG '$XC_PROJECT_PATH' -scheme '$XC_SCHEME' -configuration '$XC_TEST_CONFIGURATION' -sdk '${XC_TEST_SDK_TYPE}${XC_SDK}' build test"
   XC_BUILD_COMMAND+=" $XC_DERIVEDDATA_PATH $XC_CODECOVERAGE_PREF $XC_TEST_EXTRA_ARGS  -destination 'platform=iOS Simulator,OS=$XC_SIMOS_VER,name=$XC_SIMDEVICE' "
 
   if [ $XC_USE_XCODEBUILD == 1 ]
