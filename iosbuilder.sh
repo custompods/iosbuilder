@@ -2,7 +2,7 @@
 # Distributed under the MIT license
 # Copyright (c) 2013 Nicolae Ghimbovschi
 
-VERSION=2.0.3
+VERSION=2.0.4
 
 PROJECT_PATH="$1"
 APPSCHEME="$2"
@@ -780,8 +780,7 @@ function createPackage {
 #==========================================================
 
 function resetPodsCache {
-  rm -rf "${HOME}/Library/Caches/CocoaPods"
-  rm -rf "`pwd`/Pods/"
+  pod cache clean --all
 }
 
 function runCocoaPods {
